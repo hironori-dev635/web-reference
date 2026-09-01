@@ -1,0 +1,107 @@
+<p>PHP 8.1 の Enum を Laravel のカラム・バリデーション・Blade で使うときの最短ルート。</p>
+
+<h2>定義</h2>
+<pre><code>namespace App\Enums;
+
+enum PostStatus: string
+{
+    case Draft = 'draft';
+    case Published = 'published';
+    case Archived = 'archived';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Draft => '下書き',
+            self::Published => '公開',
+            self::Archived => 'アーカイブ',
+        };
+    }
+}</code></pre>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>書き方</th>
+                <th>結果</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>PostStatus::Draft</code></td>
+                <td>Enum 本体</td>
+            </tr>
+            <tr>
+                <td><code>PostStatus::Draft->name</code></td>
+                <td><code>'Draft'</code>（ケース名）</td>
+            </tr>
+            <tr>
+                <td><code>PostStatus::Draft->value</code></td>
+                <td><code>'draft'</code>（DB に入れる値）</td>
+            </tr>
+            <tr>
+                <td><code>PostStatus::from('draft')</code></td>
+                <td>無ければ例外</td>
+            </tr>
+            <tr>
+                <td><code>PostStatus::tryFrom('nope')</code></td>
+                <td>無ければ <code>null</code></td>
+            </tr>
+            <tr>
+                <td><code>PostStatus::cases()</code></td>
+                <td>全ケースの配列</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p><code>enum Foo: string</code> / <code>: int</code> が Backed Enum。<code>value</code> を持たない Pure Enum は DB 保存には向かない。</p>
+
+<h2>Eloquent の cast</h2>
+<pre><code>protected $casts = [
+    'status' => PostStatus::class,
+];</code></pre>
+
+<pre><code>$post->status = PostStatus::Published;
+$post->save();
+
+$post->status === PostStatus::Published; // true
+$post->status->value;                    // 'published'
+$post->status->label();                  // '公開'</code></pre>
+
+<p>DB には <code>draft</code> のようなスカラーが入る。モデル上では Enum として取り出せる。</p>
+
+<h2>バリデーション</h2>
+<pre><code>use Illuminate\Validation\Rule;
+
+$request->validate([
+    'status' => ['required', Rule::enum(PostStatus::class)],
+]);</code></pre>
+
+<p>フォームの select はだいたいこれ。</p>
+<pre><code>@foreach (PostStatus::cases() as $status)
+    &lt;option value="{{ $status->value }}"
+        @selected(old('status', $post->status?->value) === $status->value)&gt;
+        {{ $status->label() }}
+    &lt;/option&gt;
+@endforeach</code></pre>
+
+<h2>クエリ</h2>
+<pre><code>Post::where('status', PostStatus::Published)->get();
+Post::where('status', PostStatus::Published->value)->get();</code></pre>
+
+<p>どちらでも動くことが多い。比較や <code>whereIn</code> で迷ったら <code>-&gt;value</code> を明示したほうが事故が少ない。</p>
+
+<pre><code>Post::whereIn('status', [
+    PostStatus::Draft->value,
+    PostStatus::Published->value,
+])->get();</code></pre>
+
+<h2>忘れやすいポイント</h2>
+<ul>
+    <li>マイグレーションのカラムは <code>string</code> か <code>unsignedTinyInteger</code>。DB 側に PHP Enum は作れない（MySQL の ENUM 型とは別物）。</li>
+    <li>Blade で <code>{{ $post->status }}</code> はオブジェクト。表示するなら <code>-&gt;value</code> か <code>-&gt;label()</code>。</li>
+    <li>JSON レスポンスに Enum をそのまま出すと <code>{"name":"Draft","value":"draft"}</code> になりがち。Resource で <code>$this->status->value</code> に寄せる。</li>
+    <li><code>from()</code> は不正値で例外。<code>tryFrom()</code> は null。入力値は <code>tryFrom</code> か <code>Rule::enum</code>。</li>
+</ul>

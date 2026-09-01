@@ -1,0 +1,149 @@
+<p>配列操作以外でよく使う関数を、PHPとJavaScriptで比較します。関数名が似ていても、引数の順番や戻り値が異なることがあるので、使う前に公式リファレンスも確認します。</p>
+
+<h2>文字列</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>やりたいこと</th>
+                <th>PHP</th>
+                <th>JavaScript</th>
+                <th>公式</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>長さ</td>
+                <td><code>strlen</code> / <code>mb_strlen</code></td>
+                <td><code>str.length</code>（UTF-16 単位）</td>
+                <td><a href="https://www.php.net/manual/ja/function.mb-strlen.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/length" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>含むか</td>
+                <td><code>str_contains($s, $n)</code></td>
+                <td><code>s.includes(n)</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.str-contains.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/includes" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>先頭 / 末尾一致</td>
+                <td><code>str_starts_with</code> / <code>str_ends_with</code></td>
+                <td><code>s.startsWith</code> / <code>s.endsWith</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.str-starts-with.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>置換</td>
+                <td><code>str_replace($from, $to, $s)</code></td>
+                <td><code>s.replaceAll(from, to)</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.str-replace.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>切り出し</td>
+                <td><code>substr($s, 0, 3)</code> / <code>mb_substr</code></td>
+                <td><code>s.slice(0, 3)</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.mb-substr.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/slice" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>前後空白</td>
+                <td><code>trim($s)</code></td>
+                <td><code>s.trim()</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.trim.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/trim" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>大小文字</td>
+                <td><code>strtoupper</code> / <code>strtolower</code></td>
+                <td><code>s.toUpperCase()</code> / <code>s.toLowerCase()</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.strtoupper.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>繰り返し</td>
+                <td><code>str_repeat('-', 3)</code></td>
+                <td><code>'-'.repeat(3)</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.str-repeat.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/repeat" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+            <tr>
+                <td>パディング</td>
+                <td><code>str_pad($s, 4, '0', STR_PAD_LEFT)</code></td>
+                <td><code>s.padStart(4, '0')</code></td>
+                <td><a href="https://www.php.net/manual/ja/function.str-pad.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/String/padStart" target="_blank" rel="noreferrer">MDN</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>数値・計算</h2>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>やりたいこと</th><th>PHP</th><th>JavaScript</th><th>公式</th></tr></thead>
+        <tbody>
+            <tr><td>整数へ変換</td><td><code>(int) $value</code> / <code>intval($value)</code></td><td><code>Number.parseInt(value, 10)</code></td><td><a href="https://www.php.net/manual/ja/function.intval.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Number/parseInt" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>小数へ変換</td><td><code>(float) $value</code> / <code>floatval($value)</code></td><td><code>Number.parseFloat(value)</code></td><td><a href="https://www.php.net/manual/ja/function.floatval.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Number/parseFloat" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>数値か確認</td><td><code>is_numeric($value)</code></td><td><code>Number.isFinite(value)</code></td><td><a href="https://www.php.net/manual/ja/function.is-numeric.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>絶対値・最大・最小</td><td><code>abs($n)</code> / <code>max($a, $b)</code> / <code>min($a, $b)</code></td><td><code>Math.abs(n)</code> / <code>Math.max(a, b)</code> / <code>Math.min(a, b)</code></td><td><a href="https://www.php.net/manual/ja/ref.math.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>丸める</td><td><code>round($n)</code> / <code>floor($n)</code> / <code>ceil($n)</code></td><td><code>Math.round(n)</code> / <code>Math.floor(n)</code> / <code>Math.ceil(n)</code></td><td><a href="https://www.php.net/manual/ja/ref.math.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/round" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>ランダム値</td><td><code>random_int(1, 10)</code></td><td><code>Math.floor(Math.random() * 10) + 1</code></td><td><a href="https://www.php.net/manual/ja/function.random-int.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/random" target="_blank" rel="noreferrer">MDN</a></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>日付・時刻</h2>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>やりたいこと</th><th>PHP</th><th>JavaScript</th><th>公式</th></tr></thead>
+        <tbody>
+            <tr><td>現在日時</td><td><code>new DateTime()</code></td><td><code>new Date()</code></td><td><a href="https://www.php.net/manual/ja/class.datetime.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>日時を整形</td><td><code>$date-&gt;format('Y-m-d')</code></td><td><code>date.toISOString()</code></td><td><a href="https://www.php.net/manual/ja/datetime.format.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>日時を解析</td><td><code>DateTime::createFromFormat('Y-m-d', $value)</code></td><td><code>new Date(value)</code></td><td><a href="https://www.php.net/manual/ja/datetime.createfromformat.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date/Date" target="_blank" rel="noreferrer">MDN</a></td></tr>
+        </tbody>
+    </table>
+</div>
+<p>日付はタイムゾーンの影響を受けます。サーバーとブラウザで同じ日時を扱うときは、ISO 8601形式やUTCを使うか、タイムゾーンを明示します。</p>
+
+<h2>型・値の確認</h2>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>やりたいこと</th><th>PHP</th><th>JavaScript</th><th>公式</th></tr></thead>
+        <tbody>
+            <tr><td>型を確認</td><td><code>gettype($value)</code></td><td><code>typeof value</code></td><td><a href="https://www.php.net/manual/ja/function.gettype.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/typeof" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>文字列か確認</td><td><code>is_string($value)</code></td><td><code>typeof value === 'string'</code></td><td><a href="https://www.php.net/manual/ja/function.is-string.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/typeof" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>空か確認</td><td><code>empty($value)</code></td><td><code>!value</code> または明示的な比較</td><td><a href="https://www.php.net/manual/ja/function.empty.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Glossary/Truthy" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>nullか確認</td><td><code>isset($value)</code></td><td><code>value !== null &amp;&amp; value !== undefined</code></td><td><a href="https://www.php.net/manual/ja/function.isset.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/null" target="_blank" rel="noreferrer">MDN</a></td></tr>
+        </tbody>
+    </table>
+</div>
+<p><code>empty</code> と <code>!value</code> は似ていますが、判定対象は完全に同じではありません。特にPHPの <code>"0"</code>、JavaScriptの <code>NaN</code> などは、必要な条件を明示するほうが安全です。</p>
+
+<h2>JSON・URL</h2>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>やりたいこと</th><th>PHP</th><th>JavaScript</th><th>公式</th></tr></thead>
+        <tbody>
+            <tr><td>JSONへ変換</td><td><code>json_encode($data)</code></td><td><code>JSON.stringify(data)</code></td><td><a href="https://www.php.net/manual/ja/function.json-encode.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>JSONを解析</td><td><code>json_decode($json, true)</code></td><td><code>JSON.parse(json)</code></td><td><a href="https://www.php.net/manual/ja/function.json-decode.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>URLエンコード</td><td><code>urlencode($value)</code></td><td><code>encodeURIComponent(value)</code></td><td><a href="https://www.php.net/manual/ja/function.urlencode.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>URLデコード</td><td><code>urldecode($value)</code></td><td><code>decodeURIComponent(value)</code></td><td><a href="https://www.php.net/manual/ja/function.urldecode.php" target="_blank" rel="noreferrer">PHP</a> / <a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent" target="_blank" rel="noreferrer">MDN</a></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>ブラウザ・通信（JavaScript）</h2>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>やりたいこと</th><th>JavaScript</th><th>公式</th></tr></thead>
+        <tbody>
+            <tr><td>APIへリクエスト</td><td><code>fetch('/api/users')</code></td><td><a href="https://developer.mozilla.org/ja/docs/Web/API/Window/fetch" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>ログを出力</td><td><code>console.log(value)</code></td><td><a href="https://developer.mozilla.org/ja/docs/Web/API/console/log_static" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>遅延実行</td><td><code>setTimeout(callback, 1000)</code></td><td><a href="https://developer.mozilla.org/ja/docs/Web/API/Window/setTimeout" target="_blank" rel="noreferrer">MDN</a></td></tr>
+            <tr><td>一定間隔で実行</td><td><code>setInterval(callback, 1000)</code></td><td><a href="https://developer.mozilla.org/ja/docs/Web/API/Window/setInterval" target="_blank" rel="noreferrer">MDN</a></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>使い分けの注意</h2>
+<ul>
+    <li>PHPの関数は、引数の順番がJavaScriptのメソッドと異なることがある。</li>
+    <li><code>strlen</code> はバイト数、<code>mb_strlen</code> はマルチバイト文字を考慮した文字数を返す。</li>
+    <li>JavaScriptの <code>typeof null</code> は <code>"object"</code> になるため、null判定には <code>value === null</code> を使う。</li>
+    <li>配列の <code>map</code>、<code>filter</code>、<code>reduce</code> などは、別ページの「PHPとJSの配列・オブジェクト」を参照する。</li>
+</ul>
+
+

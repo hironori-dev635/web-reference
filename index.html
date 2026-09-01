@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web Reference</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            safelist: [
+                'table-fixed',
+                'w-1/5',
+                'w-1/4',
+                'w-1/3',
+                'w-2/5',
+                'w-1/2',
+                'w-3/5',
+                'w-2/3',
+                'w-3/4',
+            ],
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#15202b',
+                        paper: '#efebe3',
+                        cream: '#fbfaf7',
+                        accent: '#b45309',
+                    },
+                    fontFamily: {
+                        sans: ['"IBM Plex Sans JP"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- highlight.js（コードの色分け） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
+    <style>
+        [x-cloak] { display: none !important; }
+
+        .cheat-sheet h2 {
+            margin: 2rem 0 0.75rem;
+            padding-bottom: 0.4rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #15202b;
+            border-bottom: 1px solid #e0d8cc;
+        }
+        .cheat-sheet h2:first-child { margin-top: 0; }
+        .cheat-sheet p { margin: 0.75rem 0; line-height: 1.75; color: #334155; }
+        .cheat-sheet ul,
+        .cheat-sheet ol { margin: 0.5rem 0 1rem; padding-left: 1.2rem; }
+        .cheat-sheet li { margin: 0.35rem 0; line-height: 1.7; color: #334155; }
+        .cheat-sheet .table-wrap { overflow-x: auto; margin: 0.75rem 0 1.25rem; }
+        .cheat-sheet table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .cheat-sheet th,
+        .cheat-sheet td {
+            border: 1px solid #e0d8cc;
+            padding: 0.55rem 0.75rem;
+            vertical-align: middle;
+            text-align: left;
+        }
+        .cheat-sheet th { background: #efebe3; font-weight: 600; color: #15202b; white-space: nowrap; vertical-align: top; }
+        .cheat-sheet tbody tr:nth-child(even) { background: #f7f4ee; }
+        .cheat-sheet pre {
+            margin: 0.75rem 0 1.25rem;
+            padding: 1rem 1.1rem;
+            overflow-x: auto;
+            background: #15202b;
+            color: #e8eef2;
+            border-radius: 0.5rem;
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 0.78rem;
+            line-height: 1.65;
+            font-variant-ligatures: none;
+            font-feature-settings: "liga" 0, "calt" 0;
+        }
+        /* コード枠の外周ライン（太さと色はここ） */
+        .cheat-sheet .code-block {
+            margin: 0.75rem 0 1.25rem;
+            overflow: hidden;
+            background: #111111;
+            border: 3px solid #7b8c9c;
+            border-radius: 0.5rem;
+        }
+        .cheat-sheet .code-block .code-lang {
+            padding: 0.4rem 1rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: none;
+            color: #93a4b5;
+            background: #243040;
+        }
+        .cheat-sheet .code-block pre {
+            margin: 0;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        /* JS: アイコンの黄橙を、暗い琥珀色に落としたもの */
+        .cheat-sheet .code-block[data-lang="js"] {
+            border-color: #f0c430;
+        }
+        .cheat-sheet .code-block[data-lang="js"] .code-lang {
+            color: #e8c547;
+            background: #2a2316;
+        }
+
+        /* PHP: 象ロゴの灰紫 */
+        .cheat-sheet .code-block[data-lang="php"] {
+            border-color: #9aa3d0;
+        }
+        .cheat-sheet .code-block[data-lang="php"] .code-lang {
+            color: #b4bce0;
+            background: #242830;
+        }
+
+        /* Vue: ロゴの緑 */
+        .cheat-sheet .code-block[data-lang="vue"] {
+            border-color: #4ecf96;
+        }
+        .cheat-sheet .code-block[data-lang="vue"] .code-lang {
+            color: #7dceb0;
+            background: #17241f;
+        }
+
+        /* Blade: Laravel ロゴの朱色 */
+        .cheat-sheet .code-block[data-lang="blade"] {
+            border-color: #ff2d20;
+        }
+        .cheat-sheet .code-block[data-lang="blade"] .code-lang {
+            color: #ff8a7a;
+            background: #321a18;
+        }
+        .cheat-sheet :not(pre) > code {
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 0.82em;
+            background: #efebe3;
+            color: #9a3412;
+            padding: 0.12em 0.38em;
+            border-radius: 0.25rem;
+            font-variant-ligatures: none;
+            font-feature-settings: "liga" 0, "calt" 0;
+        }
+        .cheat-sheet pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+        }
+        .cheat-sheet .hljs {
+            background: transparent;
+            padding: 0;
+            color: #e6edf3;
+        }
+        .cheat-sheet .judge-falsy {
+            font-weight: 600;
+            color: #9a3412;
+        }
+        .cheat-sheet .judge-truthy {
+            font-weight: 600;
+            color: #396500;
+        }
+        .cheat-sheet .judge-na {
+            color: #94a3b8;
+        }
+
+        /* 公式リファレンスへのリンク */
+        .cheat-sheet .ref-links {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.3rem;
+            vertical-align: middle;
+        }
+        .cheat-sheet table a[href*="php.net"],
+        .cheat-sheet table a[href*="developer.mozilla.org"] {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.32rem;
+            height: 1.5rem;
+            padding: 0 0.55rem;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1;
+            text-decoration: none;
+            white-space: nowrap;
+            box-sizing: border-box;
+            transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+        }
+        .cheat-sheet table a[href*="php.net"] .ref-label,
+        .cheat-sheet table a[href*="developer.mozilla.org"] .ref-label,
+        .cheat-sheet table a[href*="php.net"] .ref-caret,
+        .cheat-sheet table a[href*="developer.mozilla.org"] .ref-caret {
+            display: block;
+            line-height: 1;
+            transform: translateY(0.06em);
+        }
+        .cheat-sheet table a[href*="php.net"] .ref-caret,
+        .cheat-sheet table a[href*="developer.mozilla.org"] .ref-caret {
+            font-size: 0.85em;
+            font-weight: 500;
+            opacity: 0.65;
+        }
+        .cheat-sheet table a[href*="php.net"] {
+            color: #4f4a86;
+            background: #eeedf8;
+            border-color: #d4d1ea;
+        }
+        .cheat-sheet table a[href*="developer.mozilla.org"] {
+            color: #5c3d1e;
+            background: #f6eee4;
+            border-color: #e4d3be;
+        }
+        .cheat-sheet table a[href*="php.net"]:hover,
+        .cheat-sheet table a[href*="php.net"]:focus-visible {
+            color: #3b3670;
+            background: #e3e1f4;
+            border-color: #b8b3d9;
+        }
+        .cheat-sheet table a[href*="developer.mozilla.org"]:hover,
+        .cheat-sheet table a[href*="developer.mozilla.org"]:focus-visible {
+            color: #3f2a14;
+            background: #f0e2d0;
+            border-color: #d4b58e;
+        }
+        .cheat-sheet table a[href*="php.net"]:focus-visible,
+        .cheat-sheet table a[href*="developer.mozilla.org"]:focus-visible {
+            outline: 2px solid #b45309;
+            outline-offset: 2px;
+        }
+    </style>
+
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script defer src="js/app.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="h-screen overflow-hidden bg-paper font-sans text-slate-800 antialiased" x-data="referenceApp()" x-cloak>
+    <div class="flex h-full flex-col">
+        <header class="flex h-14 shrink-0 items-center justify-between gap-4 border-b-4 border-accent bg-ink px-4 text-white md:px-6">
+            <div class="flex min-w-0 items-center gap-3">
+                <button
+                    type="button"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-md text-white/80 hover:bg-white/10 md:hidden"
+                    @click="sidebarOpen = !sidebarOpen"
+                    :aria-expanded="sidebarOpen"
+                    aria-label="目次を開く"
+                >
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="#" class="flex min-w-0 items-center gap-3 text-white" @click.prevent="goHome()">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/90">
+                        <i class="fa-solid fa-book-open text-sm"></i>
+                    </span>
+                    <span class="min-w-0">
+                        <span class="block truncate text-sm font-semibold tracking-wide">Web Reference</span>
+                        <span class="hidden truncate text-[11px] text-white/55 sm:block">自宅と会社で、忘れやすいところをさっと確認</span>
+                    </span>
+                </a>
+            </div>
+            <span class="hidden text-[11px] tracking-wider text-white/40 sm:inline">CHEAT SHEET</span>
+        </header>
+
+        <div class="relative flex min-h-0 flex-1">
+            <div
+                x-show="sidebarOpen"
+                x-transition.opacity
+                class="absolute inset-0 z-20 bg-ink/40 md:hidden"
+                @click="sidebarOpen = false"
+            ></div>
+
+            <aside
+                class="absolute inset-y-0 left-0 z-30 flex w-4/5 max-w-sm flex-col border-r border-[#e0d8cc] bg-paper transition-transform duration-200 md:static md:z-0 md:w-1/4 md:max-w-none"
+                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+            >
+                <nav class="flex-1 overflow-y-auto px-3 py-4 md:px-4" aria-label="チートシート一覧">
+                    <a
+                        href="#"
+                        class="mb-4 flex items-center gap-2 rounded-md px-3 py-2 text-sm"
+                        :class="currentId === null ? 'bg-white text-ink shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+                        @click.prevent="goHome()"
+                    >
+                        <i class="fa-solid fa-house w-4 text-center text-xs text-accent"></i>
+                        トップ
+                    </a>
+
+                    <template x-for="category in categories" :key="category.id">
+                        <section class="mb-2">
+                            <button
+                                type="button"
+                                class="mb-1 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 hover:bg-white/60"
+                                @click="toggleCategory(category.id)"
+                                :aria-expanded="isCategoryOpen(category.id)"
+                            >
+                                <i class="w-4 text-center text-xs text-accent" :class="category.icon"></i>
+                                <span x-text="category.label"></span>
+                                <i
+                                    class="fa-solid fa-chevron-down ml-auto text-[10px] transition-transform"
+                                    :class="isCategoryOpen(category.id) ? 'rotate-180' : ''"
+                                ></i>
+                            </button>
+                            <ul class="space-y-0.5" x-show="isCategoryOpen(category.id)" x-cloak>
+                                <template x-for="item in category.items" :key="item.id">
+                                    <li>
+                                        <a
+                                            :href="'#' + item.id"
+                                            class="block rounded-md px-3 py-2 text-sm leading-snug"
+                                            :class="currentId === item.id
+                                                ? 'bg-white text-ink shadow-sm ring-1 ring-inset ring-accent/30'
+                                                : 'text-slate-700 hover:bg-white/70'"
+                                            @click="closeSidebar()"
+                                        >
+                                            <span class="block font-medium" x-text="item.title"></span>
+                                            <span class="mt-0.5 block text-[11px] text-slate-500" x-text="item.blurb"></span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </section>
+                    </template>
+                </nav>
+            </aside>
+
+            <main class="min-w-0 flex-1 overflow-y-auto bg-cream md:w-3/4">
+                <div class="mx-auto max-w-4xl px-5 py-8 md:px-10 md:py-10">
+                    <template x-if="current">
+                        <article>
+                            <p class="mb-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">
+                                <span x-text="current.category.label"></span>
+                            </p>
+                            <h1 class="mb-6 text-2xl font-bold tracking-wide text-ink" x-text="current.title"></h1>
+
+                            <div x-show="loading" class="flex items-center gap-2 py-10 text-sm text-slate-500">
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                読み込み中…
+                            </div>
+                            <p x-show="error" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" x-text="error"></p>
+                            <div class="cheat-sheet" x-show="html" x-html="html"></div>
+                        </article>
+                    </template>
+
+                    <template x-if="!current">
+                        <div>
+                            <p class="mb-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">Index</p>
+                            <h1 class="mb-3 text-2xl font-bold tracking-wide text-ink">チートシート一覧</h1>
+                            <p class="mb-8 max-w-xl text-sm leading-relaxed text-slate-600">
+                                左のカテゴリから選ぶと、この右側に内容が出ます。ページ遷移はしません。URL の <code class="rounded bg-paper px-1 py-0.5 font-mono text-[12px] text-accent">#</code> 以降が各シートの番地なので、ブックマークもできます。
+                            </p>
+
+                            <div class="space-y-8">
+                                <template x-for="category in categories" :key="category.id">
+                                    <section>
+                                        <h2 class="mb-3 flex items-center gap-2 text-sm font-semibold text-ink">
+                                            <i class="text-accent" :class="category.icon"></i>
+                                            <span x-text="category.label"></span>
+                                        </h2>
+                                        <ul class="grid gap-3 sm:grid-cols-2">
+                                            <template x-for="item in category.items" :key="item.id">
+                                                <li>
+                                                    <a
+                                                        :href="'#' + item.id"
+                                                        class="block rounded-lg border border-[#e0d8cc] bg-white px-4 py-3 transition hover:border-accent/40 hover:shadow-sm"
+                                                    >
+                                                        <span class="block text-sm font-medium text-ink" x-text="item.title"></span>
+                                                        <span class="mt-1 block text-xs text-slate-500" x-text="item.blurb"></span>
+                                                    </a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </section>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

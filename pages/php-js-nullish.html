@@ -1,0 +1,126 @@
+<p>値が <code>null</code> / <code>undefined</code> のときだけ、右側を使う。Vue も JavaScript も PHP も、書き方は同じ。</p>
+
+<div class="code-block">
+    <div class="code-lang">JS</div>
+    <pre><code>a ?? b  // a が null / undefined なら b、それ以外は a</code></pre>
+</div>
+
+<div class="code-block">
+    <div class="code-lang">PHP</div>
+    <pre><code>$a ?? $b  // $a が null なら $b、それ以外は $a</code></pre>
+</div>
+
+<h2>よくある使い方: Vue / Laravel</h2>
+<div class="code-block">
+    <div class="code-lang">Vue</div>
+    <pre><code>// デフォルト表示
+
+&lt;p&gt;{{ user.name ?? 'ゲスト' }}&lt;/p&gt;
+&lt;p&gt;{{ user.email ?? 'メールアドレス未登録' }}&lt;/p&gt;
+
+&lt;p&gt;{{ user.profile?.nickname ?? user.name ?? '名無し' }}&lt;/p&gt;
+//nickname がある → それを使う
+//nickname が null → name を使う
+//name も null → 「ゲスト」を使う
+
+&lt;img :src="user.avatar ?? '/images/default-avatar.png'"&gt;
+
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const props = defineProps({
+    title: String
+})
+const message = ref(null)
+
+const title = props.title ?? ''
+const displayMessage = message.value ?? 'メッセージなし'
+
+&lt;/script&gt;
+</code></pre>
+</div>
+
+<div class="code-block">
+    <div class="code-lang">blade</div>
+    <pre><code>// オブジェクトの判定
+
+$users = User::all(); // Collectionオブジェクト
+
+@foreach ($users as $user)
+    {{ $user->name ?? 'ゲスト' }}
+    {{ $user->email ?? '未登録' }}
+@endforeach
+
+
+$user = User::find($id); // モデルオブジェクト
+
+&lt;input type="text" name="name" value="{{ old('name', $user->name ?? '')  }}"&gt;
+
+$name = $user->nickname ?? $user->name ?? 'ゲスト';
+//nickname がある → それを使う
+//nickname が null → name を使う
+//name も null → 「ゲスト」を使う
+
+
+
+//配列の判定
+
+$data = [
+    'name' => '田中',
+    'phone' => null,
+];
+
+$email = $data['email'] ?? 'メールアドレス未登録'; // $data['email'] が存在しない場合
+$phone = $data['phone'] ?? '電話番号未登録'; //$data['phone'] が null の場合
+
+&lt;p&gt;{{ $data['email'] ?? 'メールアドレス未登録' }}&lt;/p&gt;
+&lt;p&gt;{{ $data['phone'] ?? '電話番号未登録' }}&lt;/p&gt;
+
+
+</code></pre>
+</div>
+
+<h2>三項演算子との違い</h2>
+<p>null合体演算子<code>??</code> は「無いとき」の逃げ。条件で A / B を切り替える用途ではない。左が <code>true</code> でも <code>false</code> でも「値はある」ので、右側は使われない。</p>
+
+<div class="code-block">
+    <div class="code-lang">JS</div>
+    <pre><code>user.name.length > 10 ?? '長い'
+// → true か false しか返らない（'長い' は出ない）
+
+user.name.length > 10 ? '長い' : '短い'
+// → '長い' か '短い'（こちらが正しい）</code></pre>
+</div>
+
+
+
+
+<div class="table-wrap">
+    <table class="table-fixed">
+        <colgroup>
+            <col class="w-1/3">
+            <col class="w-1/3">
+            <col class="w-1/3">
+        </colgroup>
+        <thead>
+            <tr>
+                <th></th>
+                <th>何を判定するか</th>
+                <th>用途</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>null合体演算子（<code>??</code>）</th>
+                <td>値が <code>null</code> / <code>undefined</code> か</td>
+                <td>デフォルト値</td>
+            </tr>
+            <tr>
+                <th>三項演算子（<code>? :</code>）</th>
+                <td>値が真か偽か</td>
+                <td>if / elseの省略</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

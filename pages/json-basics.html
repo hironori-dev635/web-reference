@@ -1,0 +1,279 @@
+<p>
+  JSON（ジェイソン）は、データを文字列としてやり取りするための軽量な形式です。
+  APIのリクエスト・レスポンスや設定ファイルでよく使われます。JSON自体にはコメントや変数はありません。
+</p>
+
+<ol>
+  <li><a href="#json-1" data-jump="json-1">JSONの基本構文</a></li>
+  <li><a href="#json-2" data-jump="json-2">JSONで使えるデータ型</a></li>
+  <li>
+    <a href="#json-3" data-jump="json-3"
+      >JavaScriptのオブジェクトとJSONの違い</a
+    >
+  </li>
+  <li><a href="#json-4" data-jump="json-4">JavaScriptでJSONを変換する</a></li>
+  <li><a href="#json-5" data-jump="json-5">APIからJSONを受け取る</a></li>
+  <li><a href="#json-6" data-jump="json-6">JSONを送信する</a></li>
+  <li><a href="#json-7" data-jump="json-7">PHPでJSONを扱う</a></li>
+  <li>
+    <a href="#json-8" data-jump="json-8">LaravelでJSONレスポンスを返す</a>
+  </li>
+  <li><a href="#json-9" data-jump="json-9">よくある注意点</a></li>
+</ol>
+
+<h2 id="json-1">1. JSONの基本構文</h2>
+<p>
+  オブジェクトは <code>{}</code>、配列は
+  <code>[]</code> で表します。キーと文字列は必ずダブルクォートで囲み、
+  プロパティの間はカンマで区切ります。最後の要素にカンマは付けません。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">JSON</div>
+  <pre><code>{
+  "id": 1,
+  "name": "田中太郎",
+  "email": "tanaka@example.com",
+  "is_active": true,
+  "profile": null,
+  "roles": ["admin", "editor"]
+}</code></pre>
+</div>
+
+<h2 id="json-2">2. JSONで使えるデータ型</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>型</th>
+        <th>例</th>
+        <th>ポイント</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>文字列</td>
+        <td><code>"hello"</code></td>
+        <td>ダブルクォートで囲む</td>
+      </tr>
+      <tr>
+        <td>数値</td>
+        <td><code>42</code> / <code>3.14</code></td>
+        <td>クォートで囲まない</td>
+      </tr>
+      <tr>
+        <td>真偽値</td>
+        <td><code>true</code> / <code>false</code></td>
+        <td>小文字で書く</td>
+      </tr>
+      <tr>
+        <td>null</td>
+        <td><code>null</code></td>
+        <td>値がないことを表す</td>
+      </tr>
+      <tr>
+        <td>オブジェクト</td>
+        <td><code>{"name": "田中"}</code></td>
+        <td>名前付きのデータ</td>
+      </tr>
+      <tr>
+        <td>配列</td>
+        <td><code>[1, 2, 3]</code></td>
+        <td>順番のあるデータ</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="json-3">3. JavaScriptのオブジェクトとJSONの違い</h2>
+<p>
+  JSONは、JavaScriptのオブジェクト記法を元に作られたデータ交換形式です。
+  ただし、JSONはJavaScriptそのものではなく、JavaScript以外の言語でも扱える独立したテキスト形式です。
+</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>比較</th>
+        <th>JavaScriptのオブジェクト</th>
+        <th>JSON</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>正体</td>
+        <td>プログラム内で扱う値</td>
+        <td>データ交換用の文字列</td>
+      </tr>
+      <tr>
+        <td>キー</td>
+        <td><code>{ name: '田中' }</code> のように省略できる</td>
+        <td>必ずダブルクォートで囲む</td>
+      </tr>
+      <tr>
+        <td>文字列</td>
+        <td>シングル・ダブルクォートのどちらも使える</td>
+        <td>ダブルクォートだけ使える</td>
+      </tr>
+      <tr>
+        <td>その他</td>
+        <td>関数、<code>undefined</code>、コメントなどを扱える</td>
+        <td>関数、<code>undefined</code>、コメントは扱えない</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>// JavaScriptのオブジェクト。これは文字列ではない
+const user = {
+  name: '田中',
+  greet() {
+    return `こんにちは、${this.name}さん`
+  },
+}
+
+// JSON。送受信できるのは、このような文字列
+const json = '{"name":"田中"}'</code></pre>
+</div>
+
+<p>
+  APIに送るときはオブジェクトをJSON文字列に変換し、受け取ったJSON文字列はオブジェクトに戻します。
+  この変換の境界を意識すると、「見た目が似ているのにエラーになる」理由が分かりやすくなります。
+</p>
+
+<h2 id="json-4">4. JavaScriptでJSONを変換する</h2>
+<p>
+  <code>JSON.stringify</code> はJavaScriptの値をJSON文字列に変換し、<code
+    >JSON.parse</code
+  >
+  はJSON文字列をJavaScriptの値に戻します。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const user = {
+  name: '田中',
+  age: 30,
+  roles: ['admin', 'editor'],
+}
+
+const json = JSON.stringify(user)
+// '{"name":"田中","age":30,"roles":["admin","editor"]}'
+
+const parsedUser = JSON.parse(json)
+console.log(parsedUser.name) // 田中</code></pre>
+</div>
+
+<p>
+  人が読むために整形したいときは、<code>JSON.stringify</code>
+  の第3引数にインデント幅を渡します。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const formatted = JSON.stringify(user, null, 2)
+console.log(formatted)</code></pre>
+</div>
+
+<h2 id="json-5">5. APIからJSONを受け取る</h2>
+<p>
+  <code>fetch</code> のレスポンスは、<code>response.json()</code>
+  を呼ぶとJSONをJavaScriptの値として読み取れます。
+  通信エラーだけでなく、HTTPステータスも確認します。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const response = await fetch('/api/users')
+
+if (!response.ok) {
+  throw new Error(`HTTP ${response.status}`)
+}
+
+const users = await response.json()
+console.log(users[0].name)</code></pre>
+</div>
+
+<h2 id="json-6">6. JSONを送信する</h2>
+<p>
+  JSONをリクエストボディに入れるときは、<code>JSON.stringify</code>
+  で文字列化し、 <code>Content-Type</code> に
+  <code>application/json</code> を指定します。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const user = {
+  name: '田中太郎',
+  email: 'tanaka@example.com',
+}
+
+const response = await fetch('/api/users', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(user),
+})</code></pre>
+</div>
+
+<h2 id="json-7">7. PHPでJSONを扱う</h2>
+<p>
+  PHPでは <code>json_encode</code> で配列やオブジェクトをJSONに変換し、<code
+    >json_decode</code
+  >
+  でPHPの値に戻します。 第2引数を
+  <code>true</code> にすると、デコード結果を連想配列として受け取れます。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$user = [
+    'name' =&gt; '田中太郎',
+    'age' =&gt; 30,
+];
+
+$json = json_encode($user, JSON_UNESCAPED_UNICODE);
+
+$data = json_decode($json, true);
+echo $data['name'];</code></pre>
+</div>
+
+<h2 id="json-8">8. LaravelでJSONレスポンスを返す</h2>
+<p>
+  Laravelのコントローラーでは、配列を
+  <code>response()-&gt;json()</code> に渡すとJSONレスポンスを返せます。
+  Eloquentのモデルやコレクションを渡すこともできます。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>public function show(User $user)
+{
+    return response()-&gt;json([
+        'data' =&gt; $user,
+        'message' =&gt; '取得しました',
+    ]);
+}</code></pre>
+</div>
+
+<h2 id="json-9">9. よくある注意点</h2>
+<ul>
+  <li>文字列はシングルクォートではなく、ダブルクォートで囲む。</li>
+  <li>キーと値の間は <code>:</code>、要素同士は <code>,</code> で区切る。</li>
+  <li>末尾のカンマ、コメント、<code>undefined</code> はJSONでは使えない。</li>
+  <li>
+    JSONの <code>null</code> と、JavaScriptの <code>undefined</code> は別の値。
+  </li>
+  <li>パスワードやトークンなどの秘密情報を、レスポンスに含めない。</li>
+</ul>
+
+<div class="code-block">
+  <div class="code-lang">JSON</div>
+  <pre><code>// JSONではエラーになる例
+{
+  'name': '田中', // コメントも使えない
+}</code></pre>
+</div>

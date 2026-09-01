@@ -1,0 +1,119 @@
+<p>Vue 3 + <code>&lt;script setup&gt;</code> 前提。親 → 子が props、子 → 親が emit。slot と provide/inject も「値の渡し方」。</p>
+
+<h2>親から子へ（props）</h2>
+<pre><code>&lt;!-- 親 --&gt;
+&lt;UserCard :user="user" :active="true" title="担当" /&gt;</code></pre>
+
+<pre><code>// 子
+const props = defineProps({
+    user: { type: Object, required: true },
+    active: { type: Boolean, default: false },
+    title: { type: String, default: '無題' },
+});
+
+props.user.name</code></pre>
+
+<p>型だけなら短縮形。</p>
+<pre><code>const props = defineProps&lt;{
+    user: { id: number; name: string }
+    active?: boolean
+    title?: string
+}&gt;()</code></pre>
+
+<p>デフォルト値は <code>withDefaults</code>。</p>
+<pre><code>const props = withDefaults(defineProps&lt;{
+    title?: string
+    active?: boolean
+}&gt;(), {
+    title: '無題',
+    active: false,
+})</code></pre>
+
+<h2>子から親へ（emit）</h2>
+<pre><code>const emit = defineEmits&lt;{
+    save: [payload: { id: number }]
+    close: []
+}&gt;()
+
+emit('save', { id: props.user.id })
+emit('close')</code></pre>
+
+<pre><code>&lt;!-- 親 --&gt;
+&lt;UserCard :user="user" @save="onSave" @close="open = false" /&gt;</code></pre>
+
+<h2>よく使う渡し方の使い分け</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>手段</th>
+                <th>向き</th>
+                <th>いつ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>props</td>
+                <td>親 → 子</td>
+                <td>その子が使うデータ・見た目の指定</td>
+            </tr>
+            <tr>
+                <td>emit</td>
+                <td>子 → 親</td>
+                <td>クリック、保存、閉じるなどのイベント</td>
+            </tr>
+            <tr>
+                <td>v-model</td>
+                <td>双方向</td>
+                <td>入力値。詳細は「v-modelについて」</td>
+            </tr>
+            <tr>
+                <td>slot</td>
+                <td>親 → 子（テンプレート）</td>
+                <td>ボタンや見出しなど、親側でマークアップしたいとき</td>
+            </tr>
+            <tr>
+                <td>provide / inject</td>
+                <td>祖先 → 孫</td>
+                <td>何段も props をリレーしたくないとき</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>slot</h2>
+<pre><code>&lt;!-- 子 --&gt;
+&lt;header&gt;&lt;slot name="title"&gt;デフォルト見出し&lt;/slot&gt;&lt;/header&gt;
+&lt;div&gt;&lt;slot /&gt;&lt;/div&gt;</code></pre>
+
+<pre><code>&lt;!-- 親 --&gt;
+&lt;UserCard :user="user"&gt;
+    &lt;template #title&gt;{{ user.name }} さん&lt;/template&gt;
+    &lt;p&gt;本文はデフォルトスロット&lt;/p&gt;
+&lt;/UserCard&gt;</code></pre>
+
+<p>子のデータを親のスロットで使うなら scoped slot。</p>
+<pre><code>&lt;slot name="actions" :user="user" /&gt;
+
+&lt;!-- 親 --&gt;
+&lt;template #actions="{ user }"&gt;
+    &lt;button&gt;{{ user.id }} を編集&lt;/button&gt;
+&lt;/template&gt;</code></pre>
+
+<h2>provide / inject</h2>
+<pre><code>// 祖先
+import { provide, ref } from 'vue'
+const theme = ref('dark')
+provide('theme', theme)
+
+// 孫
+import { inject } from 'vue'
+const theme = inject('theme', ref('light'))</code></pre>
+
+<h2>忘れやすいポイント</h2>
+<ul>
+    <li>props は子から書き換えない。上げたい変更は emit（または v-model）。</li>
+    <li>真偽 props は <code>&lt;Comp active /&gt;</code> で <code>true</code>。<code>active="false"</code> は文字列の <code>"false"</code> になるので <code>:active="false"</code>。</li>
+    <li>親が渡した属性のうち props でないものは、子のルート要素に落ちる（fallthrough）。<code>inheritAttrs: false</code> で止められる。</li>
+    <li>オブジェクトや配列を props で渡すと参照が共有される。中身を直接 mutate すると親まで変わる。</li>
+</ul>

@@ -1,0 +1,86 @@
+<p>Vue 3 の <code>v-model</code> は「値を渡す + 更新イベントを受け取る」の糖衣。コンポーネントに載せるときは <code>defineModel()</code> が一番短い。</p>
+
+<h2>素の input</h2>
+<pre><code>&lt;input v-model="name" /&gt;</code></pre>
+
+<p>これはだいたい次と同じ。</p>
+<pre><code>&lt;input :value="name" @input="name = $event.target.value" /&gt;</code></pre>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>修飾子</th>
+                <th>意味</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>v-model.lazy</code></td>
+                <td><code>input</code> ではなく <code>change</code>（フォーカスが外れたとき）</td>
+            </tr>
+            <tr>
+                <td><code>v-model.number</code></td>
+                <td>文字列ではなく数値として入れる</td>
+            </tr>
+            <tr>
+                <td><code>v-model.trim</code></td>
+                <td>前後空白を落とす</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<pre><code>&lt;input v-model.trim.number="age" /&gt;
+&lt;input type="checkbox" v-model="ok" /&gt;
+&lt;select v-model="city"&gt;...&lt;/select&gt;</code></pre>
+
+<h2>コンポーネントで使う（defineModel）</h2>
+<pre><code>&lt;!-- 親 --&gt;
+&lt;PriceInput v-model="price" /&gt;</code></pre>
+
+<pre><code>// 子 PriceInput.vue
+const price = defineModel({ type: Number, default: 0 })
+</code></pre>
+
+<pre><code>&lt;input type="number" v-model="price" /&gt;</code></pre>
+
+<p><code>defineModel()</code> は props の <code>modelValue</code> と emit の <code>update:modelValue</code> をまとめて作る。</p>
+
+<h2>名前付き v-model（複数）</h2>
+<pre><code>&lt;!-- 親 --&gt;
+&lt;UserForm v-model:name="name" v-model:email="email" /&gt;</code></pre>
+
+<pre><code>// 子
+const name = defineModel('name')
+const email = defineModel('email')</code></pre>
+
+<p>名前を省略した <code>v-model="x"</code> だけが <code>modelValue</code>。<code>v-model:title="x"</code> は prop 名 <code>title</code> + イベント <code>update:title</code>。</p>
+
+<h2>defineModel より前の書き方</h2>
+<p>古い資料に出てくる形。中身は同じ。</p>
+<pre><code>const props = defineProps({ modelValue: String })
+const emit = defineEmits(['update:modelValue'])
+
+function onInput(e) {
+    emit('update:modelValue', e.target.value)
+}</code></pre>
+
+<pre><code>&lt;input :value="modelValue" @input="onInput" /&gt;</code></pre>
+
+<h2>チェックボックス・オブジェクト</h2>
+<pre><code>const picked = defineModel({ type: Array, default: () => [] })
+</code></pre>
+
+<pre><code>&lt;input type="checkbox" value="php" v-model="picked" /&gt;
+&lt;input type="checkbox" value="js" v-model="picked" /&gt;</code></pre>
+
+<p>親の <code>picked</code> が <code>['php', 'js']</code> のように更新される。</p>
+
+<h2>忘れやすいポイント</h2>
+<ul>
+    <li>Vue 2 は子の prop 名が <code>value</code>、イベントが <code>input</code>。Vue 3 は <code>modelValue</code> / <code>update:modelValue</code>。</li>
+    <li><code>defineModel()</code> の戻り値は ref。テンプレートでは自動アンラップ、script では <code>price.value</code>。</li>
+    <li>オブジェクトを v-model すると参照が共有されやすい。ネストを子で直接いじると親の state が黙って変わる。</li>
+    <li>修飾子を子で受け取るなら <code>defineModel({ local: true })</code> ではなく、<code>const [model, modifiers] = defineModel()</code> の第2戻り値を見る。</li>
+</ul>

@@ -1,0 +1,519 @@
+<p>
+  PHPとJavaScriptでよく使う配列とオブジェクトを比較します。どちらも複数の値をまとめて扱えますが、
+  PHPでは配列が連想配列の役割も持ち、JavaScriptでは配列とオブジェクトを分けて使うのが基本です。
+</p>
+
+<ol>
+  <li><a href="#arr-1" data-jump="arr-1">配列の作り方</a></li>
+  <li><a href="#arr-2" data-jump="arr-2">連想配列とオブジェクト</a></li>
+  <li><a href="#arr-3" data-jump="arr-3">配列を繰り返し処理する</a></li>
+  <li><a href="#arr-4" data-jump="arr-4">配列から別の配列を作る</a></li>
+  <li><a href="#arr-5" data-jump="arr-5">オブジェクトの中身を調べる</a></li>
+  <li><a href="#arr-6" data-jump="arr-6">配列の中にオブジェクトを入れる</a></li>
+  <li><a href="#arr-7" data-jump="arr-7">Vueで表示する</a></li>
+  <li>
+    <a href="#arr-8" data-jump="arr-8">よく使う配列・オブジェクト操作関数</a>
+  </li>
+</ol>
+
+<h2 id="arr-1">1. 配列の作り方</h2>
+<p>
+  複数の値を順番に並べて持つときは配列を使います。インデックスはどちらも0から始まります。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$users = ['田中', '佐藤', '鈴木'];
+
+$users[0]; // 田中
+$users[] = '高橋'; //末尾に追加</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const users = ['田中', '佐藤', '鈴木']
+
+users[0] // 田中
+users.push('高橋') //末尾に追加</code></pre>
+</div>
+
+<h2 id="arr-2">2. 連想配列とオブジェクト</h2>
+<p>
+  名前を付けて値を管理するとき、PHPでは連想配列、JavaScriptではオブジェクトを使います。
+  PHPのキーは文字列でも整数でも書けます。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$user = [
+    'name' =&gt; '田中',
+    'age' =&gt; 30,
+];
+
+$user['name']; // 田中
+$user[0]; // キーがないためエラー（インデックス的な呼び出しは不可）
+
+$user['email'] = 'tanaka@example.com';//新しく'email'をキーにして追加
+$user['0'] = '111-1111-1111';
+$user[0] = '000-0000-0000';// 数値文字列 '0' は整数キー 0 として扱われ、上書きされる
+
+</code></pre>
+</div>
+
+
+<p>
+  JavaScriptのオブジェクトは、ドット記法とブラケット記法のどちらでも値を取得できます。
+  キーを変数で指定するときはブラケット記法を使います。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const user = {
+    name: '田中',
+    age: 30,
+}
+
+user.name   // 田中
+user['name'] // 田中
+user.email = 'tanaka1@example.com'//新しくemailをキーにして追加
+user['email'] = 'tanaka2@example.com';//ブラケット記法でも代入可能
+
+user[name] // 変数未定義エラー　ReferenceError: name is not defined
+
+const key = 'name'
+user[key]    // 田中
+user.key     // undefined
+</code></pre>
+</div>
+
+<p>JSもオブジェクトのキーとした整数は 0 も '0' も同じ扱いになる。</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const user = {
+    name: '田中',
+    age: 30,
+    0: 'テスト'
+};
+
+console.log(user[0]);   // テスト
+console.log(user['0']); // テスト</code></pre>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>目的</th>
+        <th>PHP</th>
+        <th>JavaScript</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>順番のある複数の値</td>
+        <td>配列</td>
+        <td>配列</td>
+      </tr>
+      <tr>
+        <td>名前付きの値</td>
+        <td>連想配列</td>
+        <td>オブジェクト</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<br />
+<h2 id="arr-3">3. 配列を繰り返し処理する</h2>
+<p>
+  配列の各要素を処理するときは、PHPでは <code>foreach</code>、JavaScriptでは
+  <code>for...of</code> や <code>forEach</code> を使います。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$users = ['田中', '佐藤', '鈴木'];
+
+foreach ($users as $user) {
+    echo $user;
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const users = ['田中', '佐藤', '鈴木']
+
+for (const user of users) {
+    console.log(user)
+}
+
+users.forEach(user =&gt; console.log(user))</code></pre>
+</div>
+
+<h2 id="arr-4">4. 配列から別の配列を作る</h2>
+<p>
+  各要素を変換するなら <code>array_map</code> /
+  <code>map</code>、条件に合う要素だけを残すなら <code>array_filter</code> /
+  <code>filter</code> を使います。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$numbers = [1, 2, 3, 4];
+
+$doubled = array_map(
+    fn ($number) =&gt; $number * 2,
+    $numbers
+);
+// [2, 4, 6, 8]
+
+$even = array_filter(
+    $numbers,
+    fn ($number) =&gt; $number % 2 === 0
+);
+// [2, 4]</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const numbers = [1, 2, 3, 4]
+
+const doubled = numbers.map(number =&gt; number * 2)
+// [2, 4, 6, 8]
+
+const even = numbers.filter(number =&gt; number % 2 === 0)
+// [2, 4]</code></pre>
+</div>
+
+<h2 id="arr-5">5. オブジェクトの中身を調べる</h2>
+<p>オブジェクトのキーや値を一覧にすると、繰り返し処理や存在確認ができます。</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$user = ['name' =&gt; '田中', 'age' =&gt; 30];
+
+array_keys($user);   // ['name', 'age']
+array_values($user); // ['田中', 30]
+
+isset($user['email']); // false</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const user = { name: '田中', age: 30 }
+
+Object.keys(user)   // ['name', 'age']
+Object.values(user) // ['田中', 30]
+
+'email' in user     // false（この例ではキーがない）
+'name' in user      // true</code></pre>
+</div>
+
+<h2 id="arr-6">6. 配列の中にオブジェクトを入れる</h2>
+<p>
+  実際の画面表示では、ユーザーや商品などのオブジェクトを配列にまとめる形がよく使われます。
+  PHPではキーでアクセスし、JavaScriptではプロパティでアクセスします。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$users = [
+    ['name' =&gt; '田中', 'age' =&gt; 30],
+    ['name' =&gt; '佐藤', 'age' =&gt; 25],
+];
+
+foreach ($users as $user) {
+    echo $user['name'];
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const users = [
+    { name: '田中', age: 30 },
+    { name: '佐藤', age: 25 },
+]
+
+users.forEach(user =&gt; console.log(user.name))</code></pre>
+</div>
+
+<h2 id="arr-7">7. Vueで表示する</h2>
+<p>
+  Vueでは、配列を
+  <code>v-for</code>
+  で繰り返し表示します。オブジェクトの値はドット記法で参照できます。
+  一覧の要素には、安定した識別子を <code>:key</code> として指定します。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">Vue</div>
+  <pre><code>&lt;script setup&gt;
+import { ref } from 'vue'
+
+const users = ref([
+    { id: 1, name: '田中', role: '管理者' },
+    { id: 2, name: '佐藤', role: '編集者' },
+])
+&lt;/script&gt;
+
+&lt;template&gt;
+    &lt;ul&gt;
+        &lt;li v-for="user in users" :key="user.id"&gt;
+            {{ user.name }}（{{ user.role }}）
+        &lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/template&gt;</code></pre>
+</div>
+
+<h2 id="arr-8">8. よく使う配列・オブジェクト操作関数</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>目的</th>
+        <th>PHP</th>
+        <th>JavaScript</th>
+        <th>公式</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>配列の変換</td>
+        <td><code>array_map</code></td>
+        <td><code>map</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-map.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/map"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>条件に合う要素だけ取得</td>
+        <td><code>array_filter</code></td>
+        <td><code>filter</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-filter.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/filter"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>要素の件数を数える</td>
+        <td><code>count</code></td>
+        <td><code>length</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.count.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/length"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>条件に合う要素を探す</td>
+        <td><code>array_search</code></td>
+        <td><code>find</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-search.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/find"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>値が含まれるか確認</td>
+        <td><code>in_array</code></td>
+        <td><code>includes</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.in-array.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/includes"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>すべての要素を1つの値にまとめる</td>
+        <td><code>array_reduce</code></td>
+        <td><code>reduce</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-reduce.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>配列を並べ替える</td>
+        <td><code>sort</code></td>
+        <td><code>sort</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.sort.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/sort"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>配列を結合する</td>
+        <td><code>array_merge</code></td>
+        <td><code>concat</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-merge.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/concat"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>重複を取り除く</td>
+        <td><code>array_unique</code></td>
+        <td><code>Set</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-unique.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>オブジェクトのキーを取得</td>
+        <td><code>array_keys</code></td>
+        <td><code>Object.keys</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-keys.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Object/keys"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>オブジェクトの値を取得</td>
+        <td><code>array_values</code></td>
+        <td><code>Object.values</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/function.array-values.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Object/values"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>キーと値の組を取得</td>
+        <td><code>foreach</code></td>
+        <td><code>Object.entries</code></td>
+        <td>
+          <a
+            href="https://www.php.net/manual/ja/control-structures.foreach.php"
+            target="_blank"
+            rel="noopener"
+            >PHP</a
+          >
+          /
+          <a
+            href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Object/entries"
+            target="_blank"
+            rel="noopener"
+            >MDN</a
+          >
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

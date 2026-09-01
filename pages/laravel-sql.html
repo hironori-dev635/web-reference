@@ -1,0 +1,190 @@
+<p>Eloquent / Query Builder で「あのメソッド何だっけ」用。生 SQL に近い順ではなく、よく叩く順。</p>
+
+<h2>取得</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>メソッド</th>
+                <th>意味</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>get()</code></td>
+                <td>複数行。Collection が返る</td>
+            </tr>
+            <tr>
+                <td><code>first()</code> / <code>firstOrFail()</code></td>
+                <td>1件。無ければ null / 例外</td>
+            </tr>
+            <tr>
+                <td><code>find($id)</code> / <code>findOrFail($id)</code></td>
+                <td>主キーで1件</td>
+            </tr>
+            <tr>
+                <td><code>value('email')</code></td>
+                <td>先頭行の1カラムだけ</td>
+            </tr>
+            <tr>
+                <td><code>pluck('name', 'id')</code></td>
+                <td>値の配列。第2引数はキー</td>
+            </tr>
+            <tr>
+                <td><code>count()</code> / <code>exists()</code> / <code>doesntExist()</code></td>
+                <td>件数・存在確認。全件 get しない</td>
+            </tr>
+            <tr>
+                <td><code>paginate(20)</code> / <code>simplePaginate(20)</code></td>
+                <td>ページネーション</td>
+            </tr>
+            <tr>
+                <td><code>toSql()</code></td>
+                <td>実行せず SQL 文字列だけ見る</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<pre><code>User::query()
+    ->where('active', true)
+    ->orderBy('id')
+    ->toSql();</code></pre>
+
+<h2>WHERE</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>メソッド</th>
+                <th>例</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>where</code></td>
+                <td><code>->where('status', 'open')</code> / <code>->where('age', '>=', 18)</code></td>
+            </tr>
+            <tr>
+                <td><code>orWhere</code></td>
+                <td><code>->where('a', 1)->orWhere('b', 2)</code></td>
+            </tr>
+            <tr>
+                <td><code>whereIn</code> / <code>whereNotIn</code></td>
+                <td><code>->whereIn('id', [1, 2, 3])</code></td>
+            </tr>
+            <tr>
+                <td><code>whereNull</code> / <code>whereNotNull</code></td>
+                <td><code>->whereNull('deleted_at')</code></td>
+            </tr>
+            <tr>
+                <td><code>whereBetween</code></td>
+                <td><code>->whereBetween('price', [100, 500])</code></td>
+            </tr>
+            <tr>
+                <td><code>whereDate</code> / <code>whereYear</code></td>
+                <td><code>->whereDate('created_at', '2026-08-16')</code></td>
+            </tr>
+            <tr>
+                <td><code>whereColumn</code></td>
+                <td><code>->whereColumn('updated_at', '>', 'created_at')</code></td>
+            </tr>
+            <tr>
+                <td><code>whereHas</code></td>
+                <td>リレーション先の条件。<code>->whereHas('posts', fn ($q) => $q->where('pub', true))</code></td>
+            </tr>
+            <tr>
+                <td>グループ</td>
+                <td><code>->where(fn ($q) => $q->where('a', 1)->orWhere('b', 2))</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>SELECT / JOIN / 並び</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>メソッド</th>
+                <th>例</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>select</code> / <code>addSelect</code></td>
+                <td><code>->select('id', 'name')</code></td>
+            </tr>
+            <tr>
+                <td><code>selectRaw</code></td>
+                <td><code>->selectRaw('count(*) as c')</code></td>
+            </tr>
+            <tr>
+                <td><code>distinct</code></td>
+                <td><code>->distinct()->pluck('city')</code></td>
+            </tr>
+            <tr>
+                <td><code>join</code> / <code>leftJoin</code></td>
+                <td><code>->leftJoin('profiles as p', 'p.user_id', '=', 'users.id')</code></td>
+            </tr>
+            <tr>
+                <td><code>orderBy</code> / <code>latest</code></td>
+                <td><code>->orderBy('name')</code> / <code>->latest()</code>（created_at desc）</td>
+            </tr>
+            <tr>
+                <td><code>groupBy</code> / <code>having</code></td>
+                <td><code>->groupBy('user_id')->having('c', '>', 1)</code></td>
+            </tr>
+            <tr>
+                <td><code>limit</code> / <code>offset</code></td>
+                <td><code>->limit(10)->offset(20)</code>。別名 <code>take</code> / <code>skip</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>更新系</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>メソッド</th>
+                <th>例</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>insert</code></td>
+                <td><code>DB::table('x')->insert(['name' => 'a'])</code></td>
+            </tr>
+            <tr>
+                <td><code>insertGetId</code></td>
+                <td>入れて主キーを返す</td>
+            </tr>
+            <tr>
+                <td><code>update</code></td>
+                <td><code>User::where('id', 1)->update(['name' => 'a'])</code></td>
+            </tr>
+            <tr>
+                <td><code>upsert</code></td>
+                <td><code>->upsert($rows, ['email'], ['name'])</code>（一意キー, 更新カラム）</td>
+            </tr>
+            <tr>
+                <td><code>increment</code> / <code>decrement</code></td>
+                <td><code>->increment('login_count')</code></td>
+            </tr>
+            <tr>
+                <td><code>delete</code></td>
+                <td><code>->where('id', 1)->delete()</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>忘れやすいポイント</h2>
+<ul>
+    <li>N+1 は <code>with('posts')</code>。あとから足すなら <code>load('posts')</code>。</li>
+    <li>大量行は <code>chunk(100, fn ($rows) => ...)</code> か <code>cursor()</code>。</li>
+    <li>生の断片は <code>whereRaw</code> / <code>selectRaw</code> / <code>DB::raw</code>。バインドを忘れない。</li>
+    <li>Eloquent の <code>User::where(...)</code> は内部で Query Builder。迷ったら <code>User::query()-&gt;</code> から書き始める。</li>
+</ul>

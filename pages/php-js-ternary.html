@@ -1,0 +1,171 @@
+<p>if / else を1行で書いたもの。Vue も JavaScript も PHP も、書き方は同じ。</p>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>a ? b : c  // aがtrueならb、falseならc</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$a ? $b : $c  // aがtrueならb、falseならc</code></pre>
+</div>
+
+<h2>ifを使った場合との比較</h2>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>let ok="OK";
+
+// 三項演算子
+ok ? '公開' : '下書き'
+
+// 同じ意味の if
+if (ok) {
+    return '公開'
+} else {
+    return '下書き'
+}</code></pre>
+</div>
+<div class="code-block">
+  <div class="code-lang">php</div>
+  <pre><code>$ok="OK";
+
+// 三項演算子
+$ok ? '公開' : '下書き'
+
+// 同じ意味の if
+if ($ok) {
+    return '公開'
+} else {
+    return '下書き'
+}</code></pre>
+</div>
+<h2>よくある使い方: Vue / Laravel</h2>
+<div class="code-block">
+  <div class="code-lang">Vue</div>
+  <pre><code>// 文字の表示切替
+&lt;span&gt;{{ user.is_admin ? '管理者' : '一般ユーザー' }}&lt;/span&gt;
+
+// クラスの切替
+&lt;div :class="isActive ? 'bg-blue-500' : 'bg-gray-300'"&gt;
+    {{ user.name }}
+&lt;/div&gt;
+
+// ボタン文言（送信中）
+&lt;button&gt;{{ saving ? '保存中...' : '保存' }}&lt;/button&gt;
+
+// 属性の切替
+&lt;button :disabled="saving ? true : false"&gt;  // 遠回り
+&lt;button :disabled="saving"&gt;                 // 同じ意味
+
+// 画像のフォールバック
+&lt;img :src="user.avatar ? user.avatar : '/default.png'"&gt;
+
+// 件数。0 のときはハイフン
+{{ count &gt; 0 ? count + '件' : '-' }}
+
+// style の切替
+&lt;p :style="{ color: ok ? 'green' : 'red' }"&gt;</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">blade</div>
+  <pre><code>// 文字の表示切替
+&lt;span&gt;{{ $user->is_admin ? '管理者' : '一般ユーザー' }}&lt;/span&gt;
+
+// クラスの切替
+&lt;div class="{{ $isActive ? 'text-blue-500' : 'text-gray-500' }}"&gt;
+    {{ $user->name }}
+&lt;/div&gt;
+
+// ボタン文言（送信中）
+&lt;button&gt;{{ $saving ? '保存中...' : '保存' }}&lt;/button&gt;
+
+// selected / checked / disabled（古い書き方）
+&lt;option value="1" {{ $status === 1 ? 'selected' : '' }}&gt;
+&lt;input type="checkbox" {{ $ok ? 'checked' : '' }}&gt;
+&lt;button {{ $saving ? 'disabled' : '' }}&gt;
+
+// 同じことを Blade ディレクティブで（こちらのほうが読みやすい）
+&lt;option value="1" @selected($status === 1)&gt;
+&lt;input type="checkbox" @checked($ok)&gt;
+&lt;button @disabled($saving)&gt;
+
+// 画像のフォールバック
+&lt;img src="{{ $user->avatar ? $user->avatar : '/default.png' }}"&gt;
+
+// 日付があるときだけ整形
+{{ $post->published_at ? $post->published_at->format('Y/m/d') : '未公開' }}
+
+// リンク先の切替
+&lt;a href="{{ $user->is_admin ? route('admin.home') : route('home') }}"&gt;</code></pre>
+</div>
+
+<h2>条件の判定の違い（何がfalseになるか）</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>値</th>
+        <th>JS</th>
+        <th>PHP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>""</code>（空文字）</td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td><code>"0"</code>（文字のゼロ）</td>
+        <td><span class="judge-truthy">true</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td><code>0</code></td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td><code>0.0</code></td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td><code>false</code></td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td><code>null</code></td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td><code>[]</code>（空配列）</td>
+        <td><span class="judge-truthy">true</span></td>
+        <td><span class="judge-falsy">false</span></td>
+      </tr>
+      <tr>
+        <td>オブジェクト（JSでは{}　PHPではnew stdClass()  ）</td>
+        <td><span class="judge-truthy">true</span></td>
+        <td><span class="judge-truthy">true</span></td>
+      </tr>
+      <tr>
+        <td><code>undefined</code></td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-na">なし</span></td>
+      </tr>
+      <tr>
+        <td><code>NaN</code></td>
+        <td><span class="judge-falsy">false</span></td>
+        <td><span class="judge-truthy">true</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p>
+  現場で事故りやすいのは <code>"0"</code> と <code>[]</code>。JS / Vue では
+  true、PHP では false。
+</p>

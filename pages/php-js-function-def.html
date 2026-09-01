@@ -1,0 +1,426 @@
+<p>
+  PHP / JavaScript / Vue（Composition
+  API）で、関数の定義方法を比較するためのページ。例を追加中。
+</p>
+
+<ol>
+  <li><a href="#fn-1" data-jump="fn-1">基本的な関数定義</a></li>
+  <li><a href="#fn-2" data-jump="fn-2">デフォルト引数</a></li>
+  <li><a href="#fn-3" data-jump="fn-3">型指定</a></li>
+  <li><a href="#fn-4" data-jump="fn-4">null許容</a></li>
+  <li><a href="#fn-5" data-jump="fn-5">可変長引数</a></li>
+  <li><a href="#fn-6" data-jump="fn-6">無名関数</a></li>
+  <li><a href="#fn-7" data-jump="fn-7">アロー関数</a></li>
+</ol>
+
+<!-- １------------------------------------------------------ -->
+
+<h2 id="fn-1">1. 基本的な関数定義</h2>
+<p>関数の定義、呼び出しはPHPとJSで基本的には同じです。</p>
+
+<div class="code-block">
+  <div class="code-lang">Vue</div>
+  <pre><code>&lt;script setup&gt;
+function greet(name, count) {
+    return `${name}さん、${count}件`
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+    &lt;p&gt;{{ greet(user.name, 3) }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+</div>
+
+<p>
+  JavaScript はセミコロンを省略できますが、次の行が
+  <code>(</code>、<code>[</code>、テンプレートリテラル<code
+    >`string text ${expression} string text`</code
+  >などで始まると、前の行と意図せずつながることがあります。省略する場合も、文の先頭にセミコロンが必要になる書き方を避けるなど、ASI（自動セミコロン挿入）に依存しすぎない注意が必要です。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">php</div>
+  <pre><code>// 関数定義（Laravelでは helper や Controller）
+function greet($name, $count)
+{
+    return $name . 'さん、' . $count . '件';
+}
+
+$g = greet($user->name, 3);
+
+// Blade では呼ぶだけ
+{{ greet($user->name, 3) }}</code></pre>
+</div>
+
+<!-- ２------------------------------------------------------ -->
+<h2 id="fn-2">2. デフォルト引数</h2>
+<p>
+  デフォルト引数は、引数を省略したときにだけ使われます。<code>null</code>
+  を明示的に渡してもデフォルト値には置き換わりません。
+</p>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>function greet($name = 'ゲスト', $count = 0)
+{
+    return $name . 'さん、' . $count . '件';
+}
+
+greet();            // ゲストさん、0件
+greet('田中');      // 田中さん、0件
+greet('田中', 3);   // 田中さん、3件
+greet(null);        // さん、0件（$name は nullなので）</code></pre>
+</div>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function greet(name = 'ゲスト', count = 0) {
+    return `${name}さん、${count}件`
+}
+
+greet()             // ゲストさん、0件
+greet('田中')       // 田中さん、0件
+greet('田中', 3)    // 田中さん、3件
+greet(null)         // さん、0件（name は null）
+
+user = {
+    name: '田中'
+}
+greet(user.name)    // 田中さん、0件
+greet(user.kana)    // ゲストさん、0件（ kana は存在しないので undefined）
+</code></pre>
+</div>
+<!-- 3------------------------------------------------------ -->
+<h2 id="fn-3">3. 型指定</h2>
+
+<h3>PHPの型指定</h3>
+<p>PHPでは、関数の引数や戻り値に型を指定できます。</p>
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>function greet(string $name = 'ゲスト', int $count = 0): string
+{
+    return $name . 'さん、' . $count . '件';
+}</code></pre>
+</div>
+<p>
+  string、int、array
+  などの基本的な型だけでなく、クラス名を指定して、そのクラスのオブジェクトを受け取ることもできます。
+  Laravelでは、Request、Model、Collection、Serviceクラスなどを型として指定する機会が多くあります。
+</p>
+<a>→ Laravelでよく使う型指定を見る</a>
+
+<br /><br /><br /><br />
+<h3>JavaScriptの型指定</h3>
+<p>JavaScriptは関数の引数や戻り値にPHPのような型宣言を基本的に書きません。</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function greet(name, count) {
+    return `${name}さん、${count}件`;
+}
+</code></pre>
+</div>
+<p>一方、TypeScriptではJavaScriptに型指定を追加できます。</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function greet(name: string, count: number): string {
+    return `${name}さん、${count}件`;
+}
+</code></pre>
+</div>
+<a>→ TypeScriptの型指定を見る</a>
+<br /><br />
+<!-- 4------------------------------------------------------ -->
+<h2 id="fn-4">4. null許容</h2>
+
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function getNames(users) {
+    if (!users) {
+        return [];
+    }
+
+    return users.map(user => user.name);
+}
+getNames(null);       // []
+getNames(undefined);  // []
+getNames([]);         // []
+getNames([{ name: '田中' },{ name: '佐藤' }]);    // ['田中', '佐藤']
+</code></pre>
+</div>
+
+<p>
+  JavaScript には型指定がないため、<code>null</code>
+  を渡せますが、関数内の処理でnullでエラーになることがあり、対策が必要な場合があります。引数の型を静的に検査したい場合は
+  TypeScript を使います。
+</p>
+<br />
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>function greet(?string $name)
+{
+    return $name ?? 'ゲスト';
+}
+
+greet('田中');  // 田中
+greet(null);    // ゲスト
+greet();        // エラー（引数がない）
+
+// 省略も許可するならデフォルトも付ける
+function greet(?string $name = 'ゲスト') 
+{ return $name ?? 'ゲスト'; }
+
+greet()         // ゲスト（デフォルトが入る）
+greet(null);    // ゲスト（NULLガードが入る）
+
+</code></pre>
+</div>
+
+<p>
+  PHP では、型付き引数は原則として
+  <code>null</code> を受け付けず、型エラーになります。<br /><code>null</code>
+  を許可する場合は、型の前に <code>?</code> を付けます。
+</p>
+
+<h2 id="fn-5">5. 可変長引数</h2>
+<p>
+  可変長引数は、いくつの引数を受け取るか決まっていない関数で使います。引数の前に
+  <code>...</code>
+  を付けると、渡された複数の値をまとめて配列として受け取れます。
+</p>
+
+<p><strong>PHPの可変長引数</strong></p>
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>function total(int ...$numbers): int
+{
+    return array_sum($numbers);
+}
+
+total(1, 2);       // 3
+total(1, 2, 3, 4); // 10</code></pre>
+</div>
+
+<p>
+  PHPでは、可変長引数
+  <code>...$numbers</code> は関数の中で配列になります。型を付けると、
+  受け取る値の型も指定できます。
+</p>
+
+<p><strong>JavaScriptのレストパラメータ</strong></p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function total(...numbers) {
+    return numbers.reduce((sum, number) => sum + number, 0)
+}
+
+total(1, 2);       // 3
+total(1, 2, 3, 4); // 10</code></pre>
+</div>
+
+<p>
+  JavaScriptでは、可変長で受け取る引数を<strong>レストパラメータ</strong>と呼びます。PHPと
+  同じく、関数の中では配列として扱えます。通常の引数と組み合わせる場合は、レストパラメータを最後に書きます。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function greet(prefix, ...names) {
+    return names.map(name => `${prefix}、${name}`)
+}
+
+greet('こんにちは', '田中', '佐藤')
+// ['こんにちは、田中', 'こんにちは、佐藤']</code></pre>
+</div>
+
+<p><strong>Vueでの利用例</strong></p>
+<div class="code-block">
+  <div class="code-lang">Vue</div>
+  <pre><code>&lt;script setup&gt;
+function joinNames(...names) {
+    return names.join('、')
+}
+
+const result = joinNames('田中', '佐藤', '鈴木')
+&lt;/script&gt;
+
+&lt;template&gt;
+    &lt;p&gt;{{ result }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+</div>
+
+<p>
+  なお、関数に配列を渡して、その要素を個別の引数として展開したい場合も
+  <code>...</code>
+  を使います。受け取るときはレストパラメータ、渡すときはスプレッド構文です。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>function total(...numbers) {
+    return numbers.reduce((sum, number) => sum + number, 0)
+}
+
+const numbers = [1, 2, 3]
+total(...numbers) // 6</code></pre>
+</div>
+
+<h2 id="fn-6">6. 無名関数</h2>
+<p>
+  無名関数は、関数そのものに名前を付けずに作る関数です。変数に代入してあとから呼び出すことも、<code
+    >map</code
+  >
+  などの引数に直接渡すこともできます。
+  アロー関数は、無名関数をより短く書く方法の一つです（7）。
+</p>
+
+<p><strong>変数に代入して呼び出す</strong></p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const greet = function (name) {
+    return `こんにちは、${name}`
+}
+  greet('田中');</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$greet = function ($name) {
+    return 'こんにちは、' . $name;
+};
+  $greet('田中');</code></pre>
+</div>
+
+<p>
+  <strong>関数を引数として直接渡す</strong
+  >場合は、変数に代入せずその場で書けます。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const doubled = [1, 2, 3].map(function (n) {
+    return n * 2
+})
+// [2, 4, 6]</code></pre>
+</div>
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$doubled = array_map(function ($n) {
+    return $n * 2;
+}, [1, 2, 3]);
+// [2, 4, 6]</code></pre>
+</div>
+
+<p>
+  <strong>外側の変数を使う場合</strong>、JavaScript
+  は同じスコープの変数をそのまま参照できます。PHP
+  の無名関数は、外側の変数を使うときに <code>use</code> で明示します。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const label = '件'
+const format = function (count) {
+    return count + label
+}
+
+format(3) // 3件</code></pre>
+</div>
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$label = '件';
+$format = function ($count) use ($label) {
+    return $count . $label;
+};
+
+$format(3); // 3件</code></pre>
+</div>
+
+<h2 id="fn-7">7. アロー関数</h2>
+<p>
+  アロー関数は、無名関数を短く書くための JavaScript の構文です。<code>=></code>
+  の左側に引数、右側に処理を書きます。関数を一度だけ渡す <code>map</code> や
+  <code>filter</code> などでよく使います。
+</p>
+
+<p><strong>基本構文</strong></p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const greet = (name) => {
+    return `こんにちは、${name}`
+}
+
+greet('田中') // こんにちは、田中</code></pre>
+</div>
+
+<p>
+  処理が1行だけの場合は、波かっこと
+  <code>return</code> を省略できます。この書き方を
+  <strong>暗黙の戻り値</strong
+  >といいます。引数が1つだけなら、引数の丸括弧も省略できます。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const double = n => n * 2
+const doubled = [1, 2, 3].map(n => n * 2)
+
+// [2, 4, 6]
+console.log(doubled)</code></pre>
+</div>
+
+<p>
+  オブジェクトを暗黙に返す場合は、オブジェクト全体を丸括弧で囲みます。丸括弧がないと、
+  <code>{}</code> は関数の処理ブロックとして解釈されます。
+</p>
+<div class="code-block">
+  <div class="code-lang">JS</div>
+  <pre><code>const toUser = name => ({
+    name: name,
+    active: true
+})
+
+toUser('田中') // { name: '田中', active: true }</code></pre>
+</div>
+
+<p>
+  外側の変数は、無名関数と同じようにそのまま参照できます。Vue の
+  <code>computed</code>
+  や配列操作でも、この形がよく使われます。
+</p>
+<div class="code-block">
+  <div class="code-lang">Vue</div>
+  <pre><code>&lt;script setup&gt;
+import { computed, ref } from 'vue'
+
+const count = ref(3)
+const message = computed(() => `${count.value}件`)
+&lt;/script&gt;
+
+&lt;template&gt;
+    &lt;p&gt;{{ message }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+</div>
+
+<p>
+  アロー関数は通常の関数と違い、独自の <code>this</code> を持ちません。外側の
+  <code>this</code> をそのまま使うため、オブジェクトのメソッドなどで
+  <code>this</code> をそのオブジェクト自身にしたい場合は、通常の関数を使います。
+</p>
+
+<p><strong>PHPのアロー関数</strong></p>
+<p>
+  PHPにも短い関数を書くためのアロー関数があります。PHPでは
+  <code>fn</code> と書き、
+  式の結果が自動的に戻り値になります。外側の変数は自動的に値で取り込まれます。
+</p>
+<div class="code-block">
+  <div class="code-lang">PHP</div>
+  <pre><code>$tax = 0.1;
+$prices = [100, 200, 300];
+
+$withTax = array_map(
+    fn ($price) =&gt; $price * (1 + $tax),
+    $prices
+);
+
+// [110, 220, 330]</code></pre>
+</div>
+
+<p>
+  JavaScriptのアロー関数とPHPのアロー関数は似ていますが、構文は別物です。複数の文を
+  実行したい場合や、複雑な処理を書く場合は、通常の関数のほうが読みやすくなります。
+</p>
